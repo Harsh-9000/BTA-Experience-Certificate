@@ -1,0 +1,31 @@
+nav {
+    background-color: #4CAF50;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+li {
+    font-size: 18px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+
+ul li a:hover {
+    text-decoration: underline;
+}
