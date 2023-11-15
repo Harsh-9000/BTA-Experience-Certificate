@@ -1,18 +1,21 @@
-import EthereumAddress from "./EthereumAddress";
-
-function UserProfilePage({ account }) {
+function UserProfilePage({ account, userType }) {
     const pageStyle = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
     };
 
+    console.log(userType);
+
     return (
         <div style={pageStyle}>
             <h1>User Profile</h1>
 
-            {/* Display Ethereum address */}
-            <EthereumAddress account={account} />
+            <h2>Ethereum Address</h2>
+            <p>{account}</p>
+
+            <h2>Account Type</h2>
+            <p>{userType}</p>
         </div>
     );
 }

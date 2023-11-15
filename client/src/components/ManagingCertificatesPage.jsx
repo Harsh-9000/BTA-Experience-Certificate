@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function ManagingCertificatesPage({ state, account }) {
+function ManagingCertificatesPage({ state, account, userType }) {
     const [certificates, setCertificates] = useState([]);
 
     const { contract } = state;
@@ -8,21 +8,31 @@ function ManagingCertificatesPage({ state, account }) {
     useEffect(() => {
         const fetchCertificates = async () => {
             try {
-                const fetchedCertificates = await contract.getEmployeeCertificates(account);
-                console.log(fetchedCertificates[0]);
-                if (fetchedCertificates && fetchedCertificates.length > 0) {
-                    const reversedCertificates = [...fetchedCertificates].reverse();
-                    setCertificates(reversedCertificates);
-                } else {
-                    console.log("No certificates found");
+                if (userType === 'Organization') {
+                    const fetchedCertificates = await contract.getOrganizationCertificates(account);
+                    console.log(fetchedCertificates);
+                    if (fetchedCertificates && fetchedCertificates.length > 0) {
+                        const reversedCertificates = [...fetchedCertificates].reverse();
+                        setCertificates(reversedCertificates);
+                    } else {
+                        console.log("No certificates found");
+                    }
+                } else if (userType === 'Employee') {
+                    const fetchedCertificates = await contract.getEmployeeCertificates(account);
+                    if (fetchedCertificates && fetchedCertificates.length > 0) {
+                        const reversedCertificates = [...fetchedCertificates].reverse();
+                        setCertificates(reversedCertificates);
+                    } else {
+                        console.log("No certificates found");
+                    }
                 }
             } catch (error) {
                 console.log("Something went wrong: ", error);
             }
-        };
+        }
 
         contract && fetchCertificates();
-    }, [contract, account]);
+    }, [contract, account, userType]);
 
     const pageStyle = {
         display: 'flex',

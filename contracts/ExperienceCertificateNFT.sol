@@ -8,6 +8,16 @@ contract ExperienceCertificateNFT is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    enum UserType {
+        None,
+        Employee,
+        Organization
+    }
+
+    mapping(address => UserType) public userRoles;
+    mapping(address => bool) public isEmployeeRegistered;
+    mapping(address => bool) public isOrganizationRegistered;
+
     constructor() ERC721("ExperienceCertificates", "EXP") {}
 
     struct ExperienceCertificate {
@@ -22,6 +32,33 @@ contract ExperienceCertificateNFT is ERC721 {
     }
 
     mapping(uint256 => ExperienceCertificate) idToCertificate;
+    mapping(address => uint256[]) organizationCertificates;
+
+    function registerAsEmployee() external {
+        require(
+            userRoles[msg.sender] == UserType.None,
+            "User already has a role"
+        );
+        userRoles[msg.sender] = UserType.Employee;
+        isEmployeeRegistered[msg.sender] = true;
+    }
+
+    function registerAsOrganization() external {
+        require(
+            userRoles[msg.sender] == UserType.None,
+            "User already has a role"
+        );
+        userRoles[msg.sender] = UserType.Organization;
+        isOrganizationRegistered[msg.sender] = true;
+    }
+
+    function isUserOrganization() external view returns (bool) {
+        return userRoles[msg.sender] == UserType.Organization;
+    }
+
+    function isUserEmployee() external view returns (bool) {
+        return userRoles[msg.sender] == UserType.Employee;
+    }
 
     function issueCertificate(
         address receiver,
@@ -31,6 +68,11 @@ contract ExperienceCertificateNFT is ERC721 {
         string memory startDate,
         string memory endDate
     ) public payable returns (uint256) {
+        require(
+            userRoles[msg.sender] == UserType.Organization,
+            "Only organizations can issue certificates"
+        );
+
         _tokenIds.increment();
         uint256 currentTokenId = _tokenIds.current();
 
@@ -47,9 +89,29 @@ contract ExperienceCertificateNFT is ERC721 {
             endDate
         );
 
+        organizationCertificates[msg.sender].push(currentTokenId);
+
         _transfer(msg.sender, receiver, currentTokenId);
 
         return currentTokenId;
+    }
+
+    function getOrganizationCertificates(
+        address organization
+    ) public view returns (ExperienceCertificate[] memory) {
+        uint256[] memory certificateIds = organizationCertificates[
+            organization
+        ];
+        ExperienceCertificate[]
+            memory certificates = new ExperienceCertificate[](
+                certificateIds.length
+            );
+
+        for (uint256 i = 0; i < certificateIds.length; i++) {
+            certificates[i] = idToCertificate[certificateIds[i]];
+        }
+
+        return certificates;
     }
 
     function verifyCertificateAuthenticity(
