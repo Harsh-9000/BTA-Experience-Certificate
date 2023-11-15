@@ -6,7 +6,7 @@ function GetAllCertificatesPage({ state, account }) {
     });
 
     const { contract } = state;
-    const [certificates, setCertificate] = useState(null);
+    const [certificates, setCertificates] = useState(null);
 
     const pageStyle = {
         display: 'flex',
@@ -67,11 +67,15 @@ function GetAllCertificatesPage({ state, account }) {
     const handleGetCertificate = async () => {
         try {
             const retrievedCertificates = await contract.getEmployeeCertificates(formData.employeeId);
-            console.log(retrievedCertificates);
-            setCertificate(retrievedCertificates);
+            if (retrievedCertificates && retrievedCertificates.length > 0) {
+                const reversedCertificates = [...retrievedCertificates].reverse();
+                setCertificates(reversedCertificates);
+            } else {
+                console.log("No certificates found");
+            }
         } catch (error) {
             console.error('Error getting the required certificate:', error);
-            setCertificate(null);
+            setCertificates(null);
         }
     };
 
