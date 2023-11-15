@@ -10,6 +10,7 @@ import ManagingCertificatesPage from './components/ManagingCertificatesPage';
 import VerifyingCertificatesPage from './components/VerifyingCertificatesPage';
 import UserProfilePage from './components/UserProfilePage';
 import AccountTypeSelectionPage from './components/AccountTypeSelectionPage';
+import GetAllCertificatesPage from './components/GetAllCertificatesPage';
 
 function App() {
   const [state, setState] = useState({
@@ -94,11 +95,12 @@ function App() {
   return (
     <>
       {!accountTypeSelection && (<nav style={{ display: 'flex', alignItems: 'center' }}>
-        <ul style={{ display: 'flex', justifyContent: 'space-around', width: '70%' }}>
+        <ul style={{ display: 'flex', justifyContent: 'space-around', width: '80%' }}>
           <li><Link to='/'>Home</Link></li>
           {userType === 'Organization' && <li><Link to='/issue'>Issue Certificate</Link></li>}
           <li><Link to='/manage'>Manage Certificate</Link></li>
           <li><Link to='/verify'>Verify Certificate</Link></li>
+          {userType === 'Organization' && <li><Link to='/certificates'>Search Certificates</Link></li>}
           <li><Link to='/settings'>Settings</Link></li>
           <li style={{ fontWeight: 'bold', fontSize: '14px', color: 'white' }}>Account: {account}</li>
         </ul>
@@ -115,6 +117,7 @@ function App() {
         {userType === 'Organization' && <Route path='/issue' element={<IssuingCertificatesPage state={state} account={account} />} />}
         <Route path='/manage' element={<ManagingCertificatesPage state={state} account={account} userType={userType} />} />
         <Route path='/verify' element={<VerifyingCertificatesPage state={state} account={account} />} />
+        {userType === 'Organization' && <Route path='/certificates' element={<GetAllCertificatesPage state={state} account={account} />} />}
         <Route path='/settings' element={<UserProfilePage account={account} userType={userType} />} />
       </Routes>
     </>
